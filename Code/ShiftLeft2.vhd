@@ -3,7 +3,8 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity ShiftLeft2 is
     Port (
-        input  : in  std_logic_vector(31 downto 0);
+		input  : in  std_logic_vector(31 downto 0);
+	
         output : out std_logic_vector(31 downto 0)
     );
 end ShiftLeft2;

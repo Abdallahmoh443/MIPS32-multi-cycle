@@ -7,6 +7,7 @@ entity MUX2to1 is
         input0 : in  std_logic_vector(4 downto 0);
         input1 : in  std_logic_vector(4 downto 0);
         sel    : in  std_logic;
+		
         output : out std_logic_vector(4 downto 0)
     );
 end entity;

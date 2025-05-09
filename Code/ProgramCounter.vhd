@@ -6,8 +6,9 @@ entity ProgramCounter is
     Port (
         clk      : in STD_LOGIC;
         reset    : in STD_LOGIC;
-        PCWrite  : in STD_LOGIC;  -- “Ì «· enable 
-        NextPC   : in STD_LOGIC_VECTOR(31 downto 0);
+        PCWrite  : in STD_LOGIC;
+        NextPC   : in STD_LOGIC_VECTOR(31 downto 0);  
+		
         CurrentPC : out STD_LOGIC_VECTOR(31 downto 0)
     );
 end ProgramCounter;

@@ -8,6 +8,7 @@ entity ControlUnit is
         reset        : in STD_LOGIC;
         Opcode       : in STD_LOGIC_VECTOR(5 downto 0);
         Funct        : in STD_LOGIC_VECTOR(5 downto 0);
+		
         PCWrite      : out STD_LOGIC;
         PCWriteCond  : out STD_LOGIC;
         IorD         : out STD_LOGIC;

@@ -6,6 +6,7 @@ entity RegisterAB is
         clk    : in STD_LOGIC;
         AIn    : in STD_LOGIC_VECTOR(31 downto 0);
         BIn    : in STD_LOGIC_VECTOR(31 downto 0);
+		
         AOut   : out STD_LOGIC_VECTOR(31 downto 0);
         BOut   : out STD_LOGIC_VECTOR(31 downto 0)
     );

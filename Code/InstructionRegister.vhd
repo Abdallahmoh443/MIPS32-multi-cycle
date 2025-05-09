@@ -6,6 +6,7 @@ entity InstructionRegister is
         clk      : in STD_LOGIC;
         IRWrite  : in STD_LOGIC;  -- enable
         InstrIn  : in STD_LOGIC_VECTOR(31 downto 0);
+		
         Opcode   : out STD_LOGIC_VECTOR(5 downto 0);
         Rs       : out STD_LOGIC_VECTOR(4 downto 0);
         Rt       : out STD_LOGIC_VECTOR(4 downto 0);
