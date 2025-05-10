@@ -3,8 +3,10 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity MDR is
     Port (
-        clk     : in STD_LOGIC;
+		clk        : in STD_LOGIC;
+		reset_neg  : in std_logic;
         DataIn  : in STD_LOGIC_VECTOR(31 downto 0);
+		
         DataOut : out STD_LOGIC_VECTOR(31 downto 0)
     );
 end MDR;

@@ -5,19 +5,22 @@ use IEEE.numeric_std.all;
 
 entity Memory is 
 	port (
-        clk: in std_logic;
+		clk: in std_logic;
+		reset_neg : in std_logic;
         address : in std_logic_vector(31 downto 0);
-        dataIn : in std_logic_vector(31 downto 0); -- Data to write [used only with "SW"]
-
-        -- Control Signals
+		 -- Control Signals
         MemWrite : in std_logic;
         MemRead : in std_logic;
+		
+        dataIn : in std_logic_vector(31 downto 0); -- Data to write [used only with "SW"]
+
+       
         
         -- Output Data [Data or Instructions]
         dataOut : out std_logic_vector(31 downto 0)
 	);
 					   			   
-end entity;
+end Memory;
 -- Our Memory is a simple array of 2048 8-bits words [Byte]
 architecture Behavioral of Memory is
     type memArray is array(0 to 2047) of std_logic_vector(7 downto 0); -- Creating custom type

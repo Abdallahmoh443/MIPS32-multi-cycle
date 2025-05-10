@@ -1,18 +1,19 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
-entity RegisterAB is
+entity AandBRegisters is
     Port (
-        clk    : in STD_LOGIC;
-        AIn    : in STD_LOGIC_VECTOR(31 downto 0);
-        BIn    : in STD_LOGIC_VECTOR(31 downto 0);
+		clk      : in STD_LOGIC;
+		reset_neg: in std_logic;
+        AIn      : in STD_LOGIC_VECTOR(31 downto 0);
+        BIn      : in STD_LOGIC_VECTOR(31 downto 0);
 		
-        AOut   : out STD_LOGIC_VECTOR(31 downto 0);
-        BOut   : out STD_LOGIC_VECTOR(31 downto 0)
+        AOut     : out STD_LOGIC_VECTOR(31 downto 0);
+        BOut     : out STD_LOGIC_VECTOR(31 downto 0)
     );
-end RegisterAB;
+end AandBRegisters;
 
-architecture Behavioral of RegisterAB is
+architecture Behavioral of AandBRegisters is
     signal regA, regB : STD_LOGIC_VECTOR(31 downto 0);
 begin
     process(clk)

@@ -1,165 +1,165 @@
-library ieee;
-use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.NUMERIC_STD.ALL;
 
-entity Controlunit is
-    port (
-        clk          : in  std_logic;
-        reset        : in  std_logic;
-        Opcode       : in  std_logic_vector(5 downto 0);    -- input in Control Unit
-        Funct        : in  std_logic_vector(5 downto 0);    -- input in Alu control
-        PCWrite      : out std_logic;					    -- enable for write data in PC
-        PCWriteCond  : out std_logic;					    -- BEQ ouput
-        IorD         : out std_logic;						-- selector for Address (data mem)
-        MemRead      : out std_logic; 						-- enable for Read data in data mem
-        MemWrite     : out std_logic;						-- enable for Write data in data mem
-        MemtoReg     : out std_logic;  						-- selector for Write Data in Reg File
-        IRWrite      : out std_logic;						-- enable for intsruction 
-        PCSource     : out std_logic_vector(1 downto 0); 	-- selector
-        ALUSrcB      : out std_logic_vector(1 downto 0); 	-- selector	for Second ALU input
-        ALUSrcA      : out std_logic;	 					-- selector for first ALU input
-        RegWrite     : out std_logic;		 				-- enable for write data in  Reg File
-        RegDst       : out std_logic;						-- selector for write reg in Reg file
-        ALUControl   : out std_logic_vector(3 downto 0)	 	-- ALU Control selector
+entity ControlUnit is
+    Port (
+        clk          : in STD_LOGIC;
+        reset        : in STD_LOGIC;
+        Opcode       : in STD_LOGIC_VECTOR(5 downto 0);
+        Funct        : in STD_LOGIC_VECTOR(5 downto 0);
+		
+        PCWrite      : out STD_LOGIC;
+        PCWriteCond  : out STD_LOGIC;
+        IorD         : out STD_LOGIC;
+        MemRead      : out STD_LOGIC;
+        MemWrite     : out STD_LOGIC;
+        MemtoReg     : out STD_LOGIC;
+        IRWrite      : out STD_LOGIC;
+        PCSource     : out STD_LOGIC_VECTOR(1 downto 0);
+        ALUSrcB      : out STD_LOGIC_VECTOR(1 downto 0);
+        ALUSrcA      : out STD_LOGIC;
+        RegWrite     : out STD_LOGIC;
+        RegDst       : out STD_LOGIC;
+        ALUControl   : out STD_LOGIC_VECTOR(3 downto 0)
     );
-end entity ;
+end ControlUnit;
 
-architecture behavioral of Controlunit is
-		-- instructions op code
-    constant Rtype: std_logic_vector(5 downto 0) := "000000"; 	-- 4 states : fetch -> decode -> execute -> writeback	 
-    constant LW   : std_logic_vector(5 downto 0) := "100011";	-- 5 states : fetch -> decode -> execute -> memory -> writeback
-    constant SW   : std_logic_vector(5 downto 0) := "101011";	-- 4 states : fetch -> decode -> execute -> memory	
-    constant Beq  : std_logic_vector(5 downto 0) := "000100"; 	-- 3 states : fetch -> decode -> execute	
-    constant Jump : std_logic_vector(5 downto 0) := "000010"; 	-- 2 states : fetch -> execute	
+architecture Behavioral of ControlUnit is
+   
     
-    type statetype is (
-        fetch,   	-- Read instruction & calc PC+4 
-        decode,  	-- Read registers (rs & rt in R-type & Branch) or (rs & offset in SW & LW) and sign-extends offsets   
-        execute, 	-- ALU operetions (Addtion in R-type & SW & LW & Branch Address - substract in Branch step)   
-        memory,  	-- Read & Write Data in Data Memoery in SW & LW  
-        writeback   -- Write data into Reg File in R-type &	LW
+    -- Opcode definitions
+    constant OP_RTYPE   : STD_LOGIC_VECTOR(5 downto 0) := "000000";
+    constant OP_LW      : STD_LOGIC_VECTOR(5 downto 0) := "100011";
+    constant OP_SW      : STD_LOGIC_VECTOR(5 downto 0) := "101011";
+    constant OP_BEQ     : STD_LOGIC_VECTOR(5 downto 0) := "000100";
+    constant OP_J       : STD_LOGIC_VECTOR(5 downto 0) := "000010";
+    
+    type StateType is (
+        FETCH,
+        DECODE,
+        MEM_ACCESS,
+        EXECUTE,
+        WRITEBACK
     );
     
-    signal current_state, next_state : statetype;
-    signal aluop : std_logic_vector(1 downto 0);
+    signal current_state, next_state : StateType;
+    signal ALUOp : STD_LOGIC_VECTOR(1 downto 0);
     
 begin
-	
-    alu_control: entity alucontrol
-    port map (aluop, funct, alucontrol); -- alu control unit port map
-	
-    process(clk, reset)	  -- reset and clock process
+
+    -- Instantiate the ALUControl component
+    ALU_Control:entity ALUControl
+    port map (
+        ALUOp => ALUOp,
+        Funct => Funct,
+        ALUControl => ALUControl
+    );
+
+    process(clk, reset)
     begin
         if reset = '1' then
-            current_state <= fetch;
+            current_state <= FETCH;
         elsif rising_edge(clk) then
             current_state <= next_state;
         end if;
-    end process;			  
-	
-    process(current_state, opcode) -- process suspended if current state or op code changed
-    begin  
-		-- default values to avoid unPredictable errors
-        pcwrite      <= '0';
-        pcwritecond  <= '0';
-        memread      <= '0';
-        memwrite     <= '0';
-        memtoreg     <= '0';
-        irwrite      <= '0';
-        pcsource     <= "00";
-        alusrcb      <= "00";
-        alusrca      <= '0';
-        regwrite     <= '0';
-        regdst       <= '0';
-        aluop        <= "00";
+    end process;
+
+    process(current_state, Opcode)
+    begin
+        -- Default outputs
+        PCWrite      <= '0';
+        PCWriteCond  <= '0';
+        IorD         <= '0';
+        MemRead      <= '0';
+        MemWrite     <= '0';
+        MemtoReg     <= '0';
+        IRWrite      <= '0';
+        PCSource     <= "00";
+        ALUSrcB      <= "00";
+        ALUSrcA      <= '0';
+        RegWrite     <= '0';
+        RegDst       <= '0';
+        ALUOp <= "00";
 
         case current_state is
-            when fetch =>	 
-				--Read intsructions 
-				IorD 	 <= '0'; --pc input for Mem Data
-                memread  <= '1';
-				memwrite <= '0';
-                irwrite  <= '1'; 
-				-- Calc Pc+4
-                alusrca  <= '0';  --PC input for ALU  
-                alusrcb  <= "01"; --4   
-                aluop    <= "00"; --add  
-				Pcsource <= "00";  -- PC+4 input in Pc
-                pcwrite  <= '1';
-                next_state <= decode;
+            when FETCH =>
+                MemRead  <= '1';
+                ALUSrcA  <= '0';
+                ALUSrcB  <= "01";
+                ALUOp <= "00";
+                IorD     <= '0';
+                IRWrite  <= '1';
+                PCWrite  <= '1';
+                PCSource <= "00";
+                next_state <= DECODE;
 
-            when decode => -- enables in A & B reg if there exist  
-			
-			if opcode = BEQ  then	-- clac PC+4 + sign Extended off set * 4  
-				  alusrca <= '0';    -- PC + 4
-  				  aluop   <= "00";   -- ADD
-        		  alusrcb <= "11";   -- offset * 4
-   			 end if;
+            when DECODE =>
+                ALUSrcA  <= '0';
+                ALUSrcB  <= "11";
+                ALUOp <= "00";
                 
-            if opcode = Rtype or opcode = LW or opcode = SW or opcode = Beq or opcode = Jump
-				then next_state <= execute;
-   			else
-      		  next_state <= fetch;  -- handle unknown opcode
-   		    end if;
-
-            
-            when execute =>
-                case opcode is
-                    when Rtype =>  
-                        alusrca  <= '1';   
-                        alusrcb  <= "00";   
-                        aluop    <= "10"; --Rtype selector	
-                        next_state <= writeback;
-                        
-                    when LW | SW =>  
-                        alusrca  <= '1';     -- register a
-                        alusrcb  <= "10";    -- sign extended offset
-                        aluop    <= "00";    --ADD
-                        next_state <= memory;
-                        
-                    when Beq => 
-						--Check rs = rt
-                        alusrca     <= '1';    -- register a
-                        alusrcb     <= "00";   -- register b
-                        aluop       <= "01";   -- sub (compare)
-						
-                        pcwritecond <= '1';    
-                        pcsource    <= "01";   -- branch 
-                        next_state  <= fetch;
-                        
-                    when Jump =>  
-					    pcsource <= "10";      -- jump 
-                        pcwrite  <= '1';
-                        next_state <= fetch;
-                        
-                    when others =>
-                        next_state <= fetch; -- handle unknown opcode
-                end case;
-
-            when memory =>
-                if opcode = LW then
-                    memread <= '1';
-                    iord    <= '1';  		    -- alu result 
-                    next_state <= writeback;
-                else  							-- SW
-                    memwrite <= '1';
-                    iord     <= '1';  			-- alu result 
-                    next_state <= fetch;
+                if Opcode = OP_RTYPE then
+                    next_state <= EXECUTE;
+                elsif Opcode = OP_LW or Opcode = OP_SW then
+                    next_state <= MEM_ACCESS;
+                elsif Opcode = OP_BEQ or Opcode = OP_J then
+                    next_state <= WRITEBACK;
+                else
+                    next_state <= FETCH;
                 end if;
-				
-            when writeback => 
-			
-			if opcode = Rtype then	 
-				    memtoreg <= '0';    -- alu result
-                    regdst   <= '1';    -- rd 
-                    regwrite <= '1';
-					
-                elsif opcode = LW then
-                    regdst   <= '0';    -- rt
-                    memtoreg <= '1';    -- memory data reg	
-				    regwrite <= '1';
+
+            when MEM_ACCESS =>
+                if Opcode = OP_LW then
+                    ALUSrcA  <= '1';
+                    ALUSrcB  <= "10";
+                    ALUOp <= "00";
+                    MemRead  <= '1';
+                    IorD     <= '1';
+                    next_state <= WRITEBACK;
+                else -- OP_SW
+                    ALUSrcA  <= '1';
+                    ALUSrcB  <= "10";
+                    ALUOp <= "00";
+                    MemWrite <= '1';
+                    IorD     <= '1';
+                    next_state <= FETCH;
                 end if;
-                next_state <= fetch;
+
+            when EXECUTE =>
+                ALUSrcA  <= '1';
+                ALUSrcB  <= "00";
+                ALUOp <= "10";
+                next_state <= WRITEBACK;
+
+            when WRITEBACK =>
+                if Opcode = OP_RTYPE then
+                    RegDst   <= '1';
+                    RegWrite <= '1';
+                    MemtoReg <= '0';
+                    next_state <= FETCH;
+                elsif Opcode = OP_LW then
+                    RegDst   <= '0';
+                    RegWrite <= '1';
+                    MemtoReg <= '1';
+                    next_state <= FETCH;
+                elsif Opcode = OP_BEQ then
+                    ALUSrcA     <= '1';
+                    ALUSrcB     <= "00";
+                    ALUOp <= "01";
+                    PCWriteCond <= '1';
+                    PCSource    <= "01";
+                    next_state  <= FETCH;
+                elsif Opcode = OP_J then
+                    PCWrite  <= '1';
+                    PCSource <= "10";
+                    next_state <= FETCH;
+                else
+                    next_state <= FETCH;
+                end if;
+
+            when others =>
+                next_state <= FETCH;
         end case;
     end process;
-end architecture ;
+end Behavioral;

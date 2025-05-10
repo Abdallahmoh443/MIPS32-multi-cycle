@@ -3,7 +3,8 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity InstructionRegister is
     Port (
-        clk      : in STD_LOGIC;
+		CLK      : in STD_LOGIC;
+		reset_neg: in std_logic;
         IRWrite  : in STD_LOGIC;  -- enable
         InstrIn  : in STD_LOGIC_VECTOR(31 downto 0);
 		
