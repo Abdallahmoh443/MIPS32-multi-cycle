@@ -14,7 +14,8 @@ entity InstructionRegister is
         Rd       : out STD_LOGIC_VECTOR(4 downto 0);
         Shamt    : out STD_LOGIC_VECTOR(4 downto 0);
         Funct    : out STD_LOGIC_VECTOR(5 downto 0);
-        Imm      : out STD_LOGIC_VECTOR(15 downto 0)
+        Imm      : out STD_LOGIC_VECTOR(15 downto 0);
+	ShiftLeftOut : out STD_LOGIC_VECTOR(25 downto 0)
     );
 end InstructionRegister;
 
@@ -37,4 +38,5 @@ begin
     Shamt  <= reg(10 downto 6);
     Funct  <= reg(5 downto 0);
     Imm    <= reg(15 downto 0);
+    ShiftLeftOut <= reg(25 downto 0);
 end Behavioral;
