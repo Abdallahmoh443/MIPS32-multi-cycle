@@ -6,6 +6,7 @@ entity ALUControl is
     port (
         AlUOp      : in  std_logic_vector(1 downto 0);
         funct      : in  std_logic_vector(5 downto 0);
+		
         ALUcontrol : out std_logic_vector(3 downto 0)
     );
 end entity ;

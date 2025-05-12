@@ -6,6 +6,7 @@ entity ALUOut is
 		clk      : in STD_LOGIC;
 	 	reset_neg: in std_logic;
         ALUIn    : in STD_LOGIC_VECTOR(31 downto 0);
+		
         ALUOut   : out STD_LOGIC_VECTOR(31 downto 0)
     );
 end ALUOut;

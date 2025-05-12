@@ -8,6 +8,7 @@ entity Controlunit is
         reset        : in  std_logic;
         Opcode       : in  std_logic_vector(5 downto 0);    -- input in Control Unit
         Funct        : in  std_logic_vector(5 downto 0);    -- input in Alu control
+		
         PCWrite      : out std_logic;					    -- enable for write data in PC
         PCWriteCond  : out std_logic;					    -- BEQ ouput
         IorD         : out std_logic;						-- selector for Address (data mem)
