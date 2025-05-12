@@ -22,7 +22,7 @@ architecture Behavioral of ShiftLeft2 is
 
 begin
     
-output <= input(23 downto 0) & "00";
+output <= input(25 downto 0) & "00";
 
 end Behavioral;
 	

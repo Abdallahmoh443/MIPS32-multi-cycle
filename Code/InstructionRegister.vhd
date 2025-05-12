@@ -39,4 +39,4 @@ begin
     Funct  <= reg(5 downto 0);
     Imm    <= reg(15 downto 0);
     ShiftLeftOut <= reg(25 downto 0);
-end Behavioral;
+end Behavioral;	

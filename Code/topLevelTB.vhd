@@ -7,7 +7,7 @@ end topLevelTB;
 
 architecture behavior of topLevelTB is
 
-    signal clk   : std_logic := '0';
+    signal clk   : std_logic := '1';
     signal reset : std_logic := '0';
 
     -- clock period
@@ -25,9 +25,9 @@ begin
     -- Clock process
     clk_process: process
     begin
-        clk <= '0';
-        wait for clk_period/2;
         clk <= '1';
+        wait for clk_period/2;
+        clk <= '0';
         wait for clk_period/2;
     end process;
 
