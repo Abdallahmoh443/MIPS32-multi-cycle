@@ -1,53 +1,72 @@
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.NUMERIC_STD.ALL;
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 
 entity ALUControl is
-    Port (
-        ALUOp      : in STD_LOGIC_VECTOR(1 downto 0);
-        Funct      : in STD_LOGIC_VECTOR(5 downto 0);
-        ALUControl : out STD_LOGIC_VECTOR(3 downto 0)
+    port (
+        AlUOp      : in  std_logic_vector(1 downto 0);
+        funct      : in  std_logic_vector(5 downto 0);
+        ALUcontrol : out std_logic_vector(3 downto 0)
     );
-end ALUControl;
+end entity ;
 
-architecture Behavioral of ALUControl is
-    -- Function codes for R-type
-    constant FUNC_ADD   : STD_LOGIC_VECTOR(5 downto 0) := "100000";
-    constant FUNC_SUB   : STD_LOGIC_VECTOR(5 downto 0) := "100010";
-    constant FUNC_AND   : STD_LOGIC_VECTOR(5 downto 0) := "100100";
-    constant FUNC_OR    : STD_LOGIC_VECTOR(5 downto 0) := "100101";
-    constant FUNC_SLT   : STD_LOGIC_VECTOR(5 downto 0) := "101010";
-    
-    -- ALU operation codes
-    constant ALU_ADD    : STD_LOGIC_VECTOR(3 downto 0) := "0010";
-    constant ALU_SUB    : STD_LOGIC_VECTOR(3 downto 0) := "0110";
-    constant ALU_AND    : STD_LOGIC_VECTOR(3 downto 0) := "0000";
-    constant ALU_OR     : STD_LOGIC_VECTOR(3 downto 0) := "0001";
-    constant ALU_SLT    : STD_LOGIC_VECTOR(3 downto 0) := "0111";
+architecture behavioral of ALUControl is
+-- function codes for r-type instructions 
+	constant alu_Add : std_logic_vector(3 downto 0 ) :="0000";	 
+	constant alu_sub : std_logic_vector(3 downto 0 ) :="0001";
+	constant alu_and : std_logic_vector(3 downto 0 ) :="0010";
+	constant alu_or :  std_logic_vector(3 downto 0 ) :="0011";
+	constant alu_nor : std_logic_vector(3 downto 0 ) :="0100";
+	constant alu_xor : std_logic_vector(3 downto 0 ) :="0110"; 
+	constant alu_slt : std_logic_vector(3 downto 0 ) :="1001";
+	constant alu_sll : std_logic_vector(3 downto 0 ) :="0111";
+	constant alu_srl : std_logic_vector(3 downto 0 ) :="1000";
+	
+	
+	constant funct_add : std_logic_vector(5 downto 0) := "100000";  
+	constant funct_sub : std_logic_vector(5 downto 0) := "100010";
+	constant funct_and : std_logic_vector(5 downto 0) := "100100";
+	constant funct_or : std_logic_vector(5 downto 0) := "100101";
+	constant funct_nor : std_logic_vector(5 downto 0) := "100111";
+   	constant funct_xor : std_logic_vector(5 downto 0) := "100110";
+	constant funct_slt : std_logic_vector(5 downto 0) := "101010";
+	constant funct_sll : std_logic_vector(5 downto 0) := "000000";
+	constant funct_srl : std_logic_vector(5 downto 0) := "000010";  
+	
 begin
-    process(ALUOp, Funct)
+    process(aluop, funct)
     begin
-        case ALUOp is
-            when "00" =>
-			ALUControl <= ALU_ADD;  -- ADD for memory address calculation
-            when "01" =>
-			ALUControl <= ALU_SUB;  -- SUB for branch comparison
-            when "10" => -- R-type operations
-                case Funct is
-                    when FUNC_ADD => 
-					ALUControl <= ALU_ADD;
-                    when FUNC_SUB =>
-					ALUControl <= ALU_SUB;
-                    when FUNC_AND =>
-					ALUControl <= ALU_AND;
-                    when FUNC_OR  =>
-					ALUControl <= ALU_OR;
-                    when FUNC_SLT =>
-					ALUControl <= ALU_SLT;
+        case aluop is 
+            when "00" =>   --Adding
+                alucontrol <= alu_Add;
+            when "01" =>	--Substract
+                alucontrol <= alu_sub;
+            when "10" =>	--Rtype
+                case funct is
+                    when funct_add =>
+					alucontrol <= alu_Add;  -- add
+                    when funct_sub =>
+					alucontrol <= alu_sub;  -- subtract
+                    when funct_and =>
+					alucontrol <= alu_and;  -- and
+                    when funct_or  =>
+					alucontrol <= alu_or ;   -- or
+                    when funct_slt =>
+					alucontrol <= alu_slt;  -- set less than
+					when funct_nor =>
+					alucontrol <= alu_nor ;  
+					when funct_xor =>
+					alucontrol <= alu_xor; 
+					when funct_sll =>
+					alucontrol <= alu_sll;
+					when  funct_srl =>
+					alucontrol <= alu_srl  ;
                     when others   =>
-					ALUControl <= ALU_ADD; -- Default to ADD
+					alucontrol <= alu_Add;  -- default to add
                 end case;
-            when others => ALUControl <= ALU_ADD; -- Default to ADD
+                
+            when others =>
+                alucontrol <= "0010";
         end case;
     end process;
-end Behavioral;
+end architecture ;

@@ -65,23 +65,7 @@ component InstructionRegister is
     );
 end component;
 
-component Memory is
-  port (
-		clk: in std_logic;
-		reset_neg : in std_logic;
-        address : in std_logic_vector(31 downto 0);
-		 -- Control Signals
-        MemWrite : in std_logic;
-        MemRead : in std_logic;
-		
-        dataIn : in std_logic_vector(31 downto 0); -- Data to write [used only with "SW"]
 
-       
-        
-        -- Output Data [Data or Instructions]
-        dataOut : out std_logic_vector(31 downto 0)
-	);
-end component;
 
 component MDR is
   Port (
@@ -233,7 +217,7 @@ begin
   A_Logic_Unit : ALU                 port map(MuxToAlu, Mux4ToALU, ALUControltoALU, AluResultOut, ZeroCarry_TL);
   CTRL_UNIT    : ControlUnit         port map(CLK, reset_neg, Opcode_Ins, Funct_Ins, PCWriteCond_TL, PCWrite_TL, IorD_TL, MemRead_TL, MemWrite_TL, MemToReg_TL, IRWrite_TL, PCsource_TL, ALUSrcB_TL, ALUSrcA_TL, RegWrite_TL, RegDst_TL ,ALUControltoALU);
   INSTR_REG    : InstructionRegister port map(CLK, reset_neg, IRWrite_TL, MemDataOut, Opcode_Ins, Rs_Ins, Rt_Ins, Rd_Ins, Shamt_Ins, Funct_Ins, Imm_Ins);
-  MEM          : Memory              port map(CLK, reset_neg, MuxToAddress, MemWrite_TL, MemRead_TL, RegBOut, MemDataOut);
+  MEM          :entity  Memory              port map(CLK,MuxToAddress,RegBOut,MemWrite_TL,MemRead_TL   , MemDataOut);
   MEM_DATA_REG : MDR                 port map(CLK, reset_neg, MemDataOut, MemoryDataRegOut);
   MUX_1        : Mux2to1             port map(PC_out, AluOutToMux, IorD_TL, MuxToAddress);
   MUX_2        : Mux2to1_5           port map(Rt_Ins, Rd_Ins, RegDst_TL, MuxToWriteRegister);
@@ -245,7 +229,7 @@ begin
   REG          : Registers           port map(CLK, reset_neg, Rs_Ins, Rt_Ins, MuxToWriteRegister, MuxToWriteData, RegWrite_TL, ReadData1ToA, ReadData2ToB);
   SE           : SignExtend          port map(Imm_Ins, SignExtendOut);
   SLL1         : ShiftLeft           port map(SignExtendOut, ShiftLeft1ToMux4);
-  SLL2         : ShiftLeft2          port map(InstructionRegOut(25 downto 0), JumpAddress(27 downto 0));--instruction needed#####
+  SLL2         : ShiftLeft2          port map(input =>InstructionRegOut(25 downto 0), output => JumpAddress(27 downto 0));--instruction needed#####
   AandB        : AandBRegisters      port map(CLK, reset_neg, ReadData1ToA, ReadData2ToB,  RegAToMux, RegBOut);
   ALU_Out      : ALUOut				 port map(CLK, reset_neg, AluResultOut, AluOutToMux);
 end Behavioral;

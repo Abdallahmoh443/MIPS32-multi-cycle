@@ -19,16 +19,15 @@ begin
 
        with ALU_control select
 	    ALUResult <= 
-	        std_logic_vector(unsigned(operand_1) + unsigned(operand_2))   when "0000",   
-	        std_logic_vector(unsigned(operand_1) - unsigned(operand_2))   when "0001",  
-	        operand_1 and operand_2    when "0010",  
-	        operand_1 or operand_2     when "0011",   
-	        operand_1 nor operand_2    when "0100",  
-	        operand_1 nand operand_2    when "0101",   
-	        operand_1 xor operand_2     when "0110",   
-	        std_logic_vector(shift_left(unsigned(operand_1), to_integer(unsigned(operand_2(4 downto 0)))))  when "0111",   
-	        std_logic_vector(shift_right(unsigned(operand_1), to_integer(unsigned(operand_2(4 downto 0))))) when "1000",  
-	        (31 downto 1 => '0') & '1'   when "1001", 
+	        std_logic_vector(unsigned(operand_1) + unsigned(operand_2))   when "0000", --adding   100000
+	        std_logic_vector(unsigned(operand_1) - unsigned(operand_2))   when "0001", --substract 100010
+	        operand_1 and operand_2    when "0010",  -- and	100100
+	        operand_1 or operand_2     when "0011",   --or	 100101
+	        operand_1 nor operand_2    when "0100",  -- nor	 100111 
+	        operand_1 xor operand_2     when "0110",   --xor 100110 
+	        std_logic_vector(shift_left(unsigned(operand_1), to_integer(unsigned(operand_2(4 downto 0)))))  when "0111", --shift left  	  000000
+	        std_logic_vector(shift_right(unsigned(operand_1), to_integer(unsigned(operand_2(4 downto 0))))) when "1000",  --shift right	  000010 
+	        (31 downto 1 => '0') & '1'   when "1001", 	  --slt	101010
 	        (others => '0')    when others;
 	
     Result <= ALUResult;
