@@ -5,9 +5,7 @@ use IEEE.numeric_std.all;
 entity Memory is 
 	port (
         clk: in std_logic;
-        -- We only have 2048 address available so 11 bits would be enough
-        -- But we use 32 bit because we are dealing with other registers and gates
-        -- that work with 32-bit format.
+        
         address : in std_logic_vector(31 downto 0);
         dataIn : in std_logic_vector(31 downto 0); -- Data to write [used only with "SW"]
         -- Control Signals
@@ -19,9 +17,8 @@ entity Memory is
 	);
 					   			   
 end entity;
--- Our Memory is a simple array of 2052 8-bits words [Byte] to allow for word-aligned access
 architecture Behavioral of Memory is
-    type memArray is array(0 to 2051) of std_logic_vector(7 downto 0); -- Increased size to prevent boundary issues
+    type memArray is array(0 to 2047) of std_logic_vector(7 downto 0); -- Increased size to prevent boundary issues
     
     -- Initialize memory with a function to ensure proper simulation behavior
     function init_memory return memArray is
@@ -96,7 +93,7 @@ begin
             if (MemWrite = '1') then
                 addr_ind := to_integer(unsigned(address));
                 -- Add boundary check to prevent out-of-range access
-                if (addr_ind <= 2048) then  -- Ensure we don't access beyond array bounds
+                if (addr_ind <= 2044) then  -- Ensure we don't access beyond array bounds
                     Memory(addr_ind)   <= dataIn(31 downto 24); 
                     Memory(addr_ind+1) <= dataIn(23 downto 16);  
                     Memory(addr_ind+2) <= dataIn(15 downto 8);  
@@ -113,7 +110,7 @@ begin
         if (MemRead = '1') then
             addr_ind := to_integer(unsigned(address));
             -- Add boundary check to prevent out-of-range access
-            if (addr_ind <= 2048) then  -- Ensure we don't access beyond array bounds
+            if (addr_ind <= 2044) then  -- Ensure we don't access beyond array bounds
                 dataOut(31 downto 24) <= Memory(addr_ind); 
                 dataOut(23 downto 16) <= Memory(addr_ind+1); 
                 dataOut(15 downto 8)  <= Memory(addr_ind+2); 
